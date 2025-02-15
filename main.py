@@ -54,8 +54,14 @@ app.add_middleware(
 # @app.post("/a1")
 async def install_download(package_name:str,script_url:str, args):
     subprocess.run(["pip","install",package_name])
-    subprocess.run(["curl","-O",script_url+"?email="+args[0]])
+
+    # Get the current working directory
+    current_dir = os.getcwd()
     script_name = script_url.split("/")[-1]
+
+    # Download the script to the current directory
+    subprocess.run(["curl", "-o", os.path.join(current_dir, script_name), script_url + "?email=" + args[0]])
+
     subprocess.run(["uv","run", script_name, args[0]])
 
 # @app.post("/a2")
@@ -70,13 +76,13 @@ async def format_file(file_name:str,package_name:str):
 
 # @app.post("/a3")
 async def count_dates(input_file_name:str, output_file_name: str, day: str):
-    input_file_path = f"C://{input_file_name.lstrip('/')}"  # Ensure correct formatting
-    output_file_path = f"C://{output_file_name.lstrip('/')}"  # Ensure correct formatting
+    # input_file_path = f"C://{input_file_name.lstrip('/')}"  # Ensure correct formatting
+    # output_file_path = f"C://{output_file_name.lstrip('/')}"  # Ensure correct formatting
 
     days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
     day_index = days.index(day)
 
-    with open(input_file_path,"r") as input_file:
+    with open(input_file_name,"r") as input_file:
         lines = input_file.readlines()
     
     day_count = 0
@@ -88,20 +94,20 @@ async def count_dates(input_file_name:str, output_file_name: str, day: str):
             day_count+=1
     
     
-    with open(output_file_path,"w") as output_file:
+    with open(output_file_name,"w") as output_file:
         output_file.write(str(day_count))
      
 # @app.post("/a4")
 async def sort_contacts(input_file_name:str,index_1:str, index_2:str, output_file_name:str ):
-    input_file_path = f"C://{input_file_name.lstrip('/')}"  # Ensure correct formatting
-    output_file_path = f"C://{output_file_name.lstrip('/')}"  # Ensure correct formatting
+    # input_file_path = f"C://{input_file_name.lstrip('/')}"  # Ensure correct formatting
+    # output_file_path = f"C://{output_file_name.lstrip('/')}"  # Ensure correct formatting
     
-    with open(input_file_path,"r") as input_file:
+    with open(input_file_name,"r") as input_file:
         contacts = json.load(input_file)
     
     contacts = sorted(contacts, key=lambda x: (x[index_1],x[index_2]))
     
-    with open(output_file_path,"w") as output_file:
+    with open(output_file_name,"w") as output_file:
         output_file.write(str(contacts))
     
     return contacts
@@ -109,11 +115,11 @@ async def sort_contacts(input_file_name:str,index_1:str, index_2:str, output_fil
 # @app.post("/a5")
 async def write_line_files(number_of_files:str, extension:str,directory_name:str,output_file_name:str):
     
-    directory_path = f"C://{directory_name.lstrip('/')}"
-    output_file_path = f"C://{output_file_name.lstrip('/')}"  # Ensure correct formatting
+    # directory_path = f"C://{directory_name.lstrip('/')}"
+    # output_file_path = f"C://{output_file_name.lstrip('/')}"  # Ensure correct formatting
 
     # Get all log files in the directory
-    log_files = glob.glob(os.path.join(directory_path, "*"+extension))
+    log_files = glob.glob(os.path.join(directory_name, "*"+extension))
     
     # Sort files by modification time (newest first)
     log_files.sort(key=os.path.getmtime, reverse=True)
@@ -126,14 +132,14 @@ async def write_line_files(number_of_files:str, extension:str,directory_name:str
         with open(file,"r") as read_file:
             content+=""+read_file.readline().strip()+"\n"
     
-    with open(output_file_path,"w") as output_file:
+    with open(output_file_name,"w") as output_file:
         output_file.write(content)
     return content
 
 # @app.post("/a6")
 async def process_markdown(directory_name:str,element:str,index_file:str):
-    directory_path = f"C://{directory_name.lstrip('/')}"
-    index_file = f"C://{index_file.lstrip('/')}" 
+    # directory_path = f"C://{directory_name.lstrip('/')}"
+    # index_file = f"C://{index_file.lstrip('/')}" 
     
     element_patterns = {
         'H1': r'^#\s*(.*)',  # Matches H1 (# Heading)
@@ -150,7 +156,7 @@ async def process_markdown(directory_name:str,element:str,index_file:str):
     pattern = re.compile(element_patterns[element], re.DOTALL | re.MULTILINE)
     extracted_data = {}
     
-    for root, _, files in os.walk(directory_path):  # Recursively search for .md files
+    for root, _, files in os.walk(directory_name):  # Recursively search for .md files
             for filename in files:
                 if filename.endswith('.md'):
                     file_path = os.path.join(root, filename)
@@ -173,13 +179,13 @@ async def process_markdown(directory_name:str,element:str,index_file:str):
 # @app.post("/a7")
 async def llm_email(input_file_name:str,output_file_name:str):
     
-    input_file_path = f"C://{input_file_name.lstrip('/')}"
-    output_file_path = f"C://{output_file_name.lstrip('/')}"
+    # input_file_path = f"C://{input_file_name.lstrip('/')}"
+    # output_file_path = f"C://{output_file_name.lstrip('/')}"
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": "Extract the email content from the input file and write it to the output file."},
-            {"role": "user", "content": f"Please extract the email from {input_file_path} and save it to {output_file_path}."},
+            {"role": "user", "content": f"Please extract the email from {input_file_name} and save it to {output_file_name}."},
         ]
     )
 
@@ -188,14 +194,14 @@ async def llm_email(input_file_name:str,output_file_name:str):
 # Insert a8 here 
 async def llm_image(input_image_file: str, output_file_name: str):
 
-    input_file_path = f"C://{input_image_file.lstrip('/')}"
-    output_file_path = os.path.join("C:/", output_file_name.lstrip("/"))
+    # input_file_path = f"C://{input_image_file.lstrip('/')}"
+    # output_file_path = os.path.join("C:/", output_file_name.lstrip("/"))
 
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": "Extract the 12-digit number in the format XXXX XXXX XXXX from the input image file and write it to the output file without spaces."},
-            {"role": "user", "content": f"Please extract the 12-digit number from the image at {input_file_path} and save it to {output_file_path} without spaces."},
+            {"role": "user", "content": f"Please extract the 12-digit number from the image at {input_image_file} and save it to {output_file_name} without spaces."},
         ]
     )
 
@@ -203,11 +209,11 @@ async def llm_image(input_image_file: str, output_file_name: str):
 # @app.post("/a9")
 async def similar_comments(input_file_name:str,output_file_name:str ):
     
-    input_path  = f"C://{input_file_name.lstrip('/')}"
-    output_path  = f"C://{output_file_name.lstrip('/')}"
+    # input_path  = f"C://{input_file_name.lstrip('/')}"
+    # output_path  = f"C://{output_file_name.lstrip('/')}"
 
         # Read comments from the file
-    with open(input_path, 'r') as file:
+    with open(input_file_name, 'r') as file:
         comments = file.readlines()
 
     # Strip newline characters
@@ -227,7 +233,7 @@ async def similar_comments(input_file_name:str,output_file_name:str ):
     most_similar_comments = (comments[max_idx[0]], comments[max_idx[1]])
 
     # Write the most similar pair to a new file
-    with open(output_path, 'w') as file:
+    with open(output_file_name, 'w') as file:
         file.write(most_similar_comments[0] + '\n')
         file.write(most_similar_comments[1] + '\n')
 
@@ -235,18 +241,18 @@ async def similar_comments(input_file_name:str,output_file_name:str ):
 
 # @app.post("/a10")
 async def process_database_query(sqlite_database_file_name:str,query:str, output_file_name:str):
-    sqlite_database_path  = f"C://{sqlite_database_file_name.lstrip('/')}"
-    output_file = f"C://{output_file_name.lstrip('/')}"
+    # sqlite_database_path  = f"C://{sqlite_database_file_name.lstrip('/')}"
+    # output_file = f"C://{output_file_name.lstrip('/')}"
     conn = None
-    file_ext = os.path.splitext(sqlite_database_path)[1].lower()
+    file_ext = os.path.splitext(sqlite_database_file_name)[1].lower()
 
     try:
         if file_ext == '.db':
             # SQLite
-            conn = sqlite3.connect(sqlite_database_path)
+            conn = sqlite3.connect(sqlite_database_file_name)
         elif file_ext == '.mysql':
             # MySQL (expects a config file-like name or credentials within the file)
-            with open(sqlite_database_path, 'r') as f:
+            with open(sqlite_database_file_name, 'r') as f:
                 config = [line.strip() for line in f.readlines()]
             conn = mysql.connector.connect(
                 host=config[0],
@@ -256,7 +262,7 @@ async def process_database_query(sqlite_database_file_name:str,query:str, output
             )
         elif file_ext == '.pg':
             # PostgreSQL
-            with open(sqlite_database_path, 'r') as f:
+            with open(sqlite_database_file_name, 'r') as f:
                 config = [line.strip() for line in f.readlines()]
             conn = psycopg2.connect(
                 host=config[0],
@@ -279,7 +285,7 @@ async def process_database_query(sqlite_database_file_name:str,query:str, output
         cursor.close()
         conn.close()
         
-        with open(output_file,"w") as f1:
+        with open(output_file_name,"w") as f1:
             
             if len(results)==1:
                 result = results[0][0]
