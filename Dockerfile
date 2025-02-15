@@ -23,10 +23,20 @@ RUN pip install GitPython
 RUN pip install pytesseract
 RUN pip install uvicorn
 
-COPY . /app
+# Install Node.js and npm (use your preferred version of Node.js)
+RUN apt-get update && \
+    apt-get install -y curl && \
+    curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
+    apt-get install -y nodejs
 
+# Optional: Verify Node.js and npm installation
+RUN node -v && npm -v
+
+# Set the working directory to /app
 WORKDIR /app
 
+# Copy your Python application files
+COPY . .
 EXPOSE 8000
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

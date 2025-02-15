@@ -59,7 +59,7 @@ async def install_download(package_name:str,script_url:str, args):
     script_name = script_url.split("/")[-1]
 
     # Download the script to the current directory
-    subprocess.run(["curl", "-o", os.path.join(current_dir, script_name), script_url + "?email=" + args[0]])
+    subprocess.run(["curl", "-O", os.path.join(current_dir, script_name), script_url + "?email=" + args[0]])
 
     subprocess.run(["uv","run", script_name, args[0]])
 
@@ -68,10 +68,10 @@ async def format_file(file_name:str,package_name:str):
     file_path = f"C://{file_name.lstrip('/')}"  # Ensure correct formatting
     
     print(f"Formatted file path: {file_path}")
-    npm_path = r"C:\Program Files\nodejs\npm.cmd"  # Full path to npm
-    npx_path = r"C:\Program Files\nodejs\npx.cmd"  # Full path to npx
-    subprocess.run([npm_path,"install","-g",package_name])
-    subprocess.run([npx_path,package_name,"--write",file_path])
+    # npm_path = r"C:\Program Files\nodejs\npm.cmd"  # Full path to npm
+    # npx_path = r"C:\Program Files\nodejs\npx.cmd"  # Full path to npx
+    subprocess.run(["npm","install","-g",package_name])
+    subprocess.run(["npx",package_name,"--write",file_path])
 
 # @app.post("/a3")
 async def count_dates(input_file_name:str, output_file_name: str, day: str):
@@ -308,7 +308,7 @@ async def fetch_and_save_api_data(url, output_file):
                 await f.write(data)
 
 # B4: Clone a git repo and make a commit
-def clone_and_commit_repo(repo_url, commit_message, file_to_modify, new_content):
+async def clone_and_commit_repo(repo_url, commit_message, file_to_modify, new_content):
     repo = git.Repo.clone_from(repo_url, 'temp_repo')
     with open(f'temp_repo/{file_to_modify}', 'w') as f:
         f.write(new_content)
@@ -318,7 +318,8 @@ def clone_and_commit_repo(repo_url, commit_message, file_to_modify, new_content)
     origin.push()
 
 # B5: Run a SQL query on a SQLite or DuckDB database
-def run_sql_query(db_type, query, db_path):
+async def run_sql_query(db_type, query, db_path):
+    
     if db_type == 'sqlite':
         conn = sqlite3.connect(db_path)
     else:
