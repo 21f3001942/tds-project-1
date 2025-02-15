@@ -1,11 +1,12 @@
-from fastapi import FastAPI, HTTPException, Response
+from fastapi import FastAPI, HTTPException, Response, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+
 import subprocess
 import os
 import requests
 import git
 import pandas as pd
-import openai
 import sqlite3
 import mysql
 import psycopg2
@@ -22,7 +23,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 import aiohttp
 import aiofiles
-import sqlite3
 import duckdb
 from bs4 import BeautifulSoup
 from PIL import Image
@@ -31,12 +31,11 @@ import speech_recognition as sr
 import markdown
 import csv
 import json
-from fastapi import FastAPI, Query
-from fastapi.responses import JSONResponse
+
 
 app = FastAPI()
 
-OPENAPI_KEY = os.environ.get("AIPROXY_TOKEN")
+OPENAPI_KEY = os.environ["AIPROXY_TOKEN"]
 client = OpenAI(api_key=OPENAPI_KEY)
 
 
