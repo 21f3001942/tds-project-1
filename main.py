@@ -810,7 +810,7 @@ async def run_task(task:str):
     try:
         parse_task_description(task)
     except Exception as e:
-        return Response(content="Internal Server error",status_code=500)
+        return Response(content="Internal Server error, error: "+str(e),status_code=500)
     
     return Response(content="Task successfully done", status_code=200) 
 
