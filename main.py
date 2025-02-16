@@ -319,7 +319,7 @@ functions = [
                     "description": "The new content to write to the file"
                 }
             },
-            "required": ["repo_url", "commit_message", "file_to_modify", "new_content"]
+            "required": ["repo_url","clone_dir", "new_file_name", "commit_message"]
         }
     },
     {
@@ -683,6 +683,7 @@ async def fetch_and_save_api_data(url: str, output_file: str):
 
 
 def clone_and_commit_repo(repo_url, clone_dir, new_file_name, commit_message):
+    
     try:
         # Step 1: Clone the repository
         repo = git.Repo.clone_from(repo_url, clone_dir)
