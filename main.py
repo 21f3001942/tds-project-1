@@ -306,15 +306,15 @@ functions = [
                     "type": "string",
                     "description": "The URL of the git repository to clone"
                 },
+                "clone_dir": {
+                    "type": "string",
+                    "description": "The directory for the purpose of cloning"
+                },
+                "new_file_name": {
+                    "type": "string",
+                    "description": "The path of the file to commit to in the repository"
+                },
                 "commit_message": {
-                    "type": "string",
-                    "description": "The commit message for the changes"
-                },
-                "file_to_modify": {
-                    "type": "string",
-                    "description": "The path of the file to modify in the repository"
-                },
-                "new_content": {
                     "type": "string",
                     "description": "The new content to write to the file"
                 }
