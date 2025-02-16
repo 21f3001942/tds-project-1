@@ -1,42 +1,50 @@
-FROM python:3.12-slim
-RUN pip install uv
-RUN pip install fastapi
-RUN pip install requests
-RUN apt-get update && apt-get install -y git
-RUN pip install pandas
-RUN pip install openai
-RUN pip install GitPython
-RUN pip install mysql.connector
-RUN apt-get update && apt-get install -y libpq-dev gcc
-RUN pip install psycopg2
-RUN pip install datetime
-RUN pip install python-dateutil
-RUN pip install Pillow
-RUN pip install scikit-learn
-RUN pip install aiohttp
-RUN pip install aiofiles
-RUN pip install duckdb
-RUN pip install beautifulsoup4
-RUN pip install SpeechRecognition
-RUN pip install markdown
-RUN pip install GitPython
-RUN pip install pytesseract
-RUN pip install uvicorn
+FROM python:3.9-slim
+WORKDIR /
 
-# Install Node.js and npm (use your preferred version of Node.js)
-RUN apt-get update && \
-    apt-get install -y curl && \
-    curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
-    apt-get install -y nodejs
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    nodejs \
+    npm \
+    tesseract-ocr \
+    libpq-dev \
+    curl\
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
 
-# Optional: Verify Node.js and npm installation
-RUN node -v && npm -v
 
-# Set the working directory to /app
-WORKDIR /app
+# Install Python dependencies directly
+RUN pip install --no-cache-dir \
+    requests\
+    fastapi==0.68.1 \
+    uvicorn==0.15.0 \
+    python-multipart==0.0.5 \
+    aiofiles==0.7.0 \
+    aiohttp==3.8.1 \
+    beautifulsoup4==4.9.3 \
+    duckdb==0.3.1 \
+    GitPython==3.1.24 \
+    mysql-connector-python==8.0.26 \
+    numpy==1.21.2 \
+    openai==1.3.0 \
+    pandas==1.3.3 \
+    Pillow==8.3.2 \
+    psycopg2-binary==2.9.1 \
+    python-dateutil==2.8.2 \
+    pytesseract==0.3.8 \
+    scikit-learn==0.24.2 \
+    SpeechRecognition==3.8.1 \
+    markdown==3.3.4 \
+    httpx==0.24.1
 
-# Copy your Python application files
+# Copy application code
 COPY . .
+
+# Create data directory
+RUN mkdir -p /data
+
+# Expose port
 EXPOSE 8000
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run the application
+CMD ["python", "main.py"]
