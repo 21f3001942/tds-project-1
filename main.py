@@ -453,7 +453,6 @@ async def install_download(package_name:str, script_url:str, args:list):
     subprocess.run(["pip", "install", "--no-cache-dir", package_name], check=True)
     
     script_path = script_url.split("/")[-1]
-    print(script_path)
     # async with aiohttp.ClientSession() as session:
     #     async with session.get(script_url) as response:
     #         content = await response.text()
@@ -461,12 +460,7 @@ async def install_download(package_name:str, script_url:str, args:list):
     #             await f.write(content)
     
     subprocess.run(["curl","-O",script_url+"?email="+args[0]])
-    print(f"File exists: {os.path.exists(script_path)}")
 
-    
-
-    print(f"Directory exists: {os.path.exists('/data')}")
-    print(f"Directory exists: {os.path.exists('/data/data')}")
     subprocess.run(["uv","run", script_path, args[0]], check=True)
 
 async def format_file(file_name: str, package_name: str,package_version:str):
@@ -801,7 +795,6 @@ async def parse_task_description(task_description: str):
         )
         
         response_data = response.json()
-        print(response_data)
         return response_data['choices'][0]['message']['tool_calls'][0]['function']
 
 @app.post("/run")
