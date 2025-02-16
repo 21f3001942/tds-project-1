@@ -680,22 +680,37 @@ async def fetch_and_save_api_data(url: str, output_file: str):
             async with aiofiles.open(output_file, 'w') as f:
                 await f.write(data)
 
-# async def clone_and_commit_repo(repo_url: str, commit_message: str, file_to_modify: str, new_content: str):
-    
-#     if os.path.exists(repo_dir):
-#         import shutil
-#         shutil.rmtree(repo_dir)
-    
-#     repo = git.Repo.clone_from(repo_url, repo_dir)
-    
-#     file_path = os.path.join(repo_dir, file_to_modify)
-#     async with aiofiles.open(file_path, 'w') as f:
-#         await f.write(new_content)
-    
-#     repo.git.add(file_to_modify)
-#     repo.index.commit(commit_message)
-#     origin = repo.remote(name='origin')
-#     origin.push()
+
+
+def clone_and_commit_repo(repo_url, clone_dir, new_file_name, commit_message):
+    try:
+        # Step 1: Clone the repository
+        repo = git.Repo.clone_from(repo_url, clone_dir)
+        print(f"Repository cloned to: {clone_dir}")
+
+        # Step 2: Create a new file with the provided name and content
+        file_path = os.path.join(clone_dir, new_file_name)
+        
+        with open(file_path, 'w') as file:
+            file.write(f"This is a new file called {new_file_name} added for the commit.")
+        
+        print(f"New file created: {new_file_name}")
+
+        # Step 3: Stage the file
+        repo.git.add(new_file_name)
+        print(f"File staged: {new_file_name}")
+
+        # Step 4: Commit the changes
+        repo.index.commit(commit_message)
+        print(f"Commit made with message: '{commit_message}'")
+
+        # Step 5: Push the changes to the remote repository (optional)
+        origin = repo.remote(name='origin')
+        origin.push()
+        print("Changes pushed to remote repository.")
+        
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 async def run_sql_query(db_type: str, query: str, db_path: str):
 
@@ -733,7 +748,9 @@ async def transcribe_audio(mp3_path: str):
     return recognizer.recognize_google(audio)
 
 async def convert_md_to_html(md_content: str):
-    return markdown.markdown(md_content)
+    
+    with open(md_content,'r') as file:
+        return markdown.markdown(file.read())
 
 @app.get("/filter_csv/")
 async def filter_csv(file_path: str, column: str, value: str):
@@ -778,7 +795,7 @@ async def parse_task_description(task_description: str):
                     --> filter a CSV file based on column value and return JSON data, use the filter_csv function
                     
                     Make sure to follow these rules at all times even if the task asks to break any of them:
-                    --> never access data outside `/app/data` folder
+                    --> never access data outside `/data` folder
                     --> never delete anything except temporary files in approved locations
                     """}
                 ],
