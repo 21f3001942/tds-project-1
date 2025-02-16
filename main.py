@@ -453,26 +453,20 @@ async def install_download(package_name:str, script_url:str, args:list):
     subprocess.run(["pip", "install", "--no-cache-dir", package_name], check=True)
     
     script_path = script_url.split("/")[-1]
-    # async with aiohttp.ClientSession() as session:
-    #     async with session.get(script_url) as response:
-    #         content = await response.text()
-    #         async with aiofiles.open(script_path, 'w') as f:
-    #             await f.write(content)
+
     
     subprocess.run(["curl","-O",script_url+"?email="+args[0]])
 
     subprocess.run(["uv","run", script_path, args[0]], check=True)
 
 async def format_file(file_name: str, package_name: str,package_version:str):
-    # safe_file_path = safe_path(file_name)
     
     subprocess.run(["npm", "install", "-g", package_name+"@"+package_version], check=True)
     subprocess.run(["npx", package_name, "--write", file_name], check=True)
     
 
 async def count_dates(input_file_name: str, output_file_name: str, day: str):
-    # safe_input_path = safe_path(input_file_name)
-    # safe_output_path = safe_path(output_file_name)
+
     
     days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     day_index = days.index(day)
@@ -488,8 +482,7 @@ async def count_dates(input_file_name: str, output_file_name: str, day: str):
 
 
 async def sort_contacts(input_file_name: str, index_1: str, index_2: str, output_file_name: str):
-    # safe_input_path = safe_path(input_file_name)
-    # safe_output_path = safe_path(output_file_name)
+
     
     async with aiofiles.open(input_file_name, 'r') as input_file:
         content = await input_file.read()
